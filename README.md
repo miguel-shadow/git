@@ -18,8 +18,9 @@
         - [2.4.3. Regresar a un commit](#243-regresar-a-un-commit)
     - [2.5. Cambios temporales (Stash)](#25-cambios-temporales-stash)
         - [2.5.1. Añadir](#251-añadir)
-        - [2.5.2. Listar cambios y ver detalles](#252-listar-cambios-y-ver-detalles)
-        - [2.5.3. Regresar](#253-regresar)
+        - [2.5.2. Listar y ver detalles](#252-listar-y-ver-detalles)
+        - [2.5.3. Recuperar](#253-recuperar)
+        - [2.5.4. Eliminar](#254-eliminar)
     - [2.6. Ramas (Branch)](#26-ramas-branch)
         - [2.6.1. Ver ramas](#261-ver-ramas)
         - [2.6.2. Crear rama](#262-crear-rama)
@@ -29,7 +30,8 @@
         - [2.6.6. Merge](#266-merge)
         - [2.6.7. Rebase](#267-rebase)
         - [2.6.8. Cherry pick](#268-cherry-pick)
-        - [2.6.9. Ver último commit de las ramas](#269-ver-último-commit-de-las-ramas)
+        - [2.6.9. Cambiar puntero de una rama a otra](#269-cambiar-puntero-de-una-rama-a-otra)
+        - [2.6.10. Ver último commit de las ramas](#2610-ver-último-commit-de-las-ramas)
     - [2.7. Repositorios remotos](#27-repositorios-remotos)
         - [2.7.1. Ver enlace remoto](#271-ver-enlace-remoto)
         - [2.7.2. Enlazar repositorio local con remoto](#272-enlazar-repositorio-local-con-remoto)
@@ -42,8 +44,8 @@
     - [3.1. Exlude](#31-exlude)
     - [3.2. Eliminar rastreo](#32-eliminar-rastreo)
 - [4. Git config](#4-git-config)
-    - [4.3. Alias](#43-alias)
-    - [4.4. Configuración personal](#44-configuración-personal)
+    - [4.1. Alias](#41-alias)
+    - [4.2. Configuración personal](#42-configuración-personal)
 - [5. SSH](#5-ssh)
 
 
@@ -273,7 +275,7 @@ Se pueden **deshacer** los cambios *commiteados* mediante distintos métodos:
 >
 > ```bash
 > git fetch origin
-> git reset --hard origin/<nombre_de_rama>
+> git reset --hard origin/<nombre_rama>
 >```
 
 
@@ -289,20 +291,31 @@ git stash push
 ```
 
 > [!IMPORTANT]
-> De esta manera solo se incluyen las modificaciones de archivos rastreados por *Git*, es decir, aquellos que ya se encuentran en el repositorio. Si se desea incluir los cambios de los **archivos no rastreados**, se debe utilizar la *flag* `-u`
+> De esta manera solo se incluyen las **modificaciones** de archivos **rastreados** por *Git*, es decir, aquellos que ya se encuentran *indexados* en el repositorio (estén en el *staging area* o no). Si se desea incluir los cambios de los **archivos no rastreados**, se debe utilizar la *flag* `-u`
 
 > [!TIP]
-> Mediante la flag `-m "<mensaje>"`, se puede añadir un mensaje personalizado al cambio temporal
+> Si se desean almacenar únicamente los cambios que se encuentren en el *staging area*, se debe utilizar la *flag* `-S`
 
 > [!TIP]
-> Se puede abreviar el comando a únicamente
+> Para añadir todos los cambios temporales (*staging area*, rastreados y no rastreados) se utiliza la *flag* `-a`:
+
+> [!TIP]
+> Mediante la *flag* `-m "<mensaje>"`, se puede añadir un mensaje personalizado al cambio temporal:
+>
+> ```bash
+> git stash -m "<mensaje>"
+> ```
 >
 > ```bash
 > git stash -u -m "<mensaje>"
 > ```
+>
+> ```bash
+> git stash -a -m "<mensaje>"
+> ```
 
 
-### 2.5.2. Listar cambios y ver detalles
+### 2.5.2. Listar y ver detalles
 Se pueden almacenar distintos cambios temporales con los comandos anteriores. Los cambios se almacenan en en una pila, es decir, el índice 0 es el último cambio almacenado, para listar los cambios temporales almacenados, se utiliza el comando:
 
 ```bash
@@ -325,20 +338,43 @@ git stash show
 > Para mostrar los archivos no rastreados también, se debe añadir la *flag* `-u`
 
 
-### 2.5.3. Regresar
-Para regresar los cambios temporales, se debe utilizar los comandos:
+### 2.5.3. Recuperar
+Existen distintos métodos para recuperar los cambios temporales:
 
 - Recuperar el último cambio almacenado:
 
     ```bash
-    git stash pop
+    git stash apply
     ```
 
 - Recuperar un cambio específico:
 
     ```bash
+    git stash apply <index>
+    ```
+
+- Recuperar el último cambio almacenado y eliminarlo del almacén:
+
+    ```bash
+    git stash pop
+    ```
+
+- Recuperar un cambio específico y eliminarlo del almacén:
+
+    ```bash
     git stash pop <index>
     ```
+
+
+### 2.5.4. Eliminar
+Para eliminar un cambio temporal sin recuperar los cambios, se debe ejecutar el comando:
+
+```bash
+git stash drop <index>
+```
+
+> [!CAUTION]
+> No se pueden recuperar
 
 
 ## 2.6. Ramas (Branch)
@@ -460,7 +496,7 @@ git rebase <nombre_rama_con_cambios>
 Se puede aplicar un commit específico de una rama en otra rama, sin necesidad de mergear la rama completa. Para ello, existe el comando:
 
 ```bash
-git cherry-pick
+git cherry-pick <hash_commit>
 ```
 
 > [!TIP]
@@ -479,7 +515,19 @@ git cherry-pick
 > ```
 
 
-### 2.6.9. Ver último commit de las ramas
+### 2.6.9. Cambiar puntero de una rama a otra
+Se puede forzar que la rama actual modifique su puntero para apuntar a otra rama (o a un *commit* específico de ésta). Permite **sobreescribir** el historial de la rama actual con el de la otra rama. Para ello, se utiliza el comando:
+
+```bash
+git branch -f <nombre_otra_rama>
+```
+
+```bash
+git branch -f <nombre_otra_rama> <hash_commit>
+```
+
+
+### 2.6.10. Ver último commit de las ramas
 Se puede ver el **hash** y el **mensaje** del **último *commit*** realizado en cada rama con el comando:
 
 ```bash
@@ -495,10 +543,11 @@ Dependiendo de la plataforma, se siguen distintos pasos para crear un repositori
 - Repositorio **sin** contenido: El repositorio se crea, pero debe ser **enlazado** con un repositorio local o introducir un contenido (archivo o carpeta) para que se **inicialice**
 - Repositorio **con** contenido: El repositorio se crea **inicializado**, es decir, puede ser **clonado** (descargado) en local
 
-En *GitHub*, se puede acceder al repositorio remoto mediante distintos **enlaces**:
+En la mayoría de repositorios remotos permiten acceder al repositorio mediante distintos **métodos**. Por ejemplo, en *GitHub* se puede acceder mediante:
 
 - Mediante ***HTTPS***: `https://github.com/<usuario>/<nombre_repositorio>.git`
 - Mediante ***SSH***: `git@github.com:<usuario>/<nombre_repositorio>.git`
+- Mediante ***GitHub CLI***
 
 
 ### 2.7.1. Ver enlace remoto
@@ -523,9 +572,12 @@ git remote add origin <enlace_repositorio>
 > git remote set-url origin <nuevo_enlace_repositorio>
 > ```
 
+> [!NOTE]
+> Un repositorio local se puede enlazar con varios repositorios remotos, `origin` es el nombre por defecto. Para referenciar a otro repositorio remoto, se puede utilizar otro nombre
+
 
 ### 2.7.3. Clonar un repositorio remoto
-Si el repositorio remoto posee contenido, se debe clonar en local para adquirirlos. Para ello, se utiliza el comando:
+Si el repositorio remoto posee contenido, se puede clonar el repositorio para obtenerlo. Para ello, se utiliza el comando:
 
 ```bash
 git clone <enlace_repositorio>
@@ -537,16 +589,16 @@ Si se ha producido algún cambio en el repositorio remoto, existen varias formas
 
 - ***Fetch*** + ***Merge***: Obtener los cambios e insertarlos manualmente:
 
-```bash
-git fetch # Obtener los cambios remotos
-git merge origin/<rama_remota> # Mergear los cambios en el repositorio local
-```
+    ```bash
+    git fetch # Obtener los cambios remotos
+    git merge origin/<rama_remota> # Mergear los cambios en el repositorio local
+    ```
 
 - ***Pull***: Obtener los cambios e insertarlos directamente:
 
-```bash
-git pull
-```
+    ```bash
+    git pull
+    ```
 
 
 ### 2.7.5. Sincronizar cambios locales
@@ -652,7 +704,7 @@ Se puede ver el **listado** de configuraciones aplicadas mediante los comandos:
 
 Una de las **configuraciones** más importantes y comunes es establecer el **nombre** y el **correo electrónico** del usuario que realiza los cambios (se mostrará en los ***commits***):
 
-- Se puede editar el archivo correspondiente (generalmente en el archivo global):
+- Se puede editar el archivo correspondiente (generalmente el archivo global):
 
     ```ini
     [user]
@@ -668,10 +720,25 @@ Una de las **configuraciones** más importantes y comunes es establecer el **nom
     ```
 
 > [!TIP]
-> Si se desea aplicar en un determinado repositorio local, se debe eliminar la *flag* `--global` del comando o editar el archivo `.git/config`
+> Si se desea aplicar en un determinado repositorio local, se debe eliminar la *flag* `--global` del comando o editar el archivo `.git/config` del repositorio deseado
+
+> [!NOTE]
+> Para eliminar una configuración, se utiliza la flag `--unset` y la configuración a eliminar (por ejemplo `user.name`):
+>
+> ```bash
+> git config --global --unset <configuracion>
+> ```
+>
+> Para eliminar una configuración local, eliminar la flag `--global`
+>
+> ```bash
+> git config --unset <configuracion>
+> ```
+>
+> También se puede eliminar la línea del archivo de configuración correspondiente
 
 
-## 4.3. Alias
+## 4.1. Alias
 Se pueden crear **alias** para ejecutar comandos de Git. Se pueden utilizar para ejecutar comandos con varias *flags* o múltiples comandos
 
 Algunos alias útiles son:
@@ -694,6 +761,7 @@ Algunos alias útiles son:
 
     ```bash
     git addAll
+    ```
 
 - Cambiar a la rama anterior:
 
@@ -703,6 +771,7 @@ Algunos alias útiles son:
 
     ```bash
     git toggle
+    ```
 
 - Añadir los cambios y crear un commit con el mensaje introducido:
 
@@ -729,7 +798,7 @@ Algunos alias útiles son:
 > ```
 
 
-## 4.4. Configuración personal
+## 4.2. Configuración personal
 
 Existen una gran cantidad de configuraciones. A continuación se muestra la configuración que yo utilizo:
 
@@ -737,6 +806,8 @@ Existen una gran cantidad de configuraciones. A continuación se muestra la conf
 [user]
     email = <correo_electronico>
     name = <nombre>
+[init]
+    defaultbranch = main
 [filter "lfs"]
     required = true
     clean = git-lfs clean -- %f
@@ -749,9 +820,11 @@ Existen una gran cantidad de configuraciones. A continuación se muestra la conf
 [help]
     autocorrect = 50
 [alias]
-    logDetails = log --oneline --graph --decorate --all
-    toggle = switch -
     commitAll = "!f() { git add . && git commit -m \"$1\"; }; f"
+    logDetails = log --oneline --graph --decorate --all
+    pushAll = "!f() { git add . && git commit -m \"$1\" && git push; }; f"
+    stashAll = "!f() { git stash push -u -m \"$1\"; }; f"
+    toggle = switch -
 ```
 
 
@@ -767,6 +840,7 @@ Pasos a realizar en Windows:
 
 1. **Copiar la clave pública** (generalmente su extensión es `.pub`) en el **repositorio** remoto (*GitHub*, *GitLab*...):
     - En ***GitHub***: `Settings` → `SSH and GPG keys` → `New SSH key` → `Copiar el contenido de la clave pública`
+    - En ***Bitbucket***: `Settings (⚙️)` → `Personal Bitbucket Settings` → `SSH Keys (Security)` → `Add Key` → `Copiar el contenido de la clave pública`
 
 1. **Modificar** el archivo `config` en la carpeta `%USERPROFILE%\.ssh\` (Si no existe la carpeta o el archivo, se deben crear)
 
