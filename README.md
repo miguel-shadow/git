@@ -831,7 +831,7 @@ Existen una gran cantidad de configuraciones. A continuación se muestra la conf
 # 5. SSH
 Se puede trabajar con repositorios a través de **SSH** en vez de un enlace HTTPS. Permiten trabajar con repositorios **sin** la necesidad de **introducir credenciales**. Para ello se conecta al servidor *Git* mediante **claves SSH**. Se puede **retirar el acceso** de las claves en cualquier momento.
 
-Pasos a realizar en Windows:
+Pasos a realizar en ***Windows***:
 
 1. **Generar claves SSH**: Existen numerosas formas de generar claves SSH mediante herramientas como ***openSSH***, ***openSSL***, ***BitWarden***... A continuación se explica como hacerlo mediante `ssh-keygen` (viene instalado con *Git Bash*):
     - Utilizando *Git Bash*, ejecutar el **comando** `ssh-keygen.exe` para **crear** un par de claves SSH (una pública y otra privada)
@@ -845,21 +845,20 @@ Pasos a realizar en Windows:
 1. **Modificar** el archivo `config` en la carpeta `%USERPROFILE%\.ssh\` (Si no existe la carpeta o el archivo, se deben crear)
 
     ```ini
-    Host github-<nombre> # Nombre personalizado
-      HostName github.com
+    Host <nombre>.github # Nombre personalizado
+      HostName github.com # Host del repositorio remoto
       User git
-      IdentityFile <path/clave_privada> # Generalmente ~/.ssh/<path_clave_privada>
+      IdentityFile <path/clave_privada_filename> # Generalmente se suele crear en la propia carpeta .ssh: ~/.ssh/<clave_privada_filename>
       IdentitiesOnly yes
     ```
 
 1. **Clonar** un repositorio: Se debe copiar el enlace de **SSH** (*No el de HTTPS*) del repositorio. Antes de ejecutar el comando `git clone`, se debe cambiar el dominio (en este caso `github.com`) por el ***Host*** almacenado en `%USERPROFILE%\.ssh\config`:
 
     ```bash
-    git clone git@github-<nombre>:path/repositorio.git
+    git clone git@<nombre>.github:<github_username>/repositorio.git
     ```
-
 
 > [!TIP]
 > Para **añadir otra cuenta**, se deben repetir los pasos anteriores, cambiando el `<nombre>` en `Host` del archivo `%USERPROFILE%\.ssh\config` por otro y **enlazándolo** con la clave privada correspondiente.
 >
-> Mediante `github-<nombre>` al realizar el *clone*, se puede **elegir** con que **cuenta** se desea clonar el repositorio, muy útil en los repositorios privados
+> Mediante `<nombre>.github` al realizar el *clone*, se puede **elegir** con que **cuenta** se desea clonar el repositorio, muy útil en repositorios privados
