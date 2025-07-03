@@ -47,6 +47,7 @@
     - [4.1. Alias](#41-alias)
     - [4.2. Configuración personal](#42-configuración-personal)
 - [5. SSH](#5-ssh)
+- [6. Firmar commits](#6-firmar-commits)
 
 
 # 1. Estados Git
@@ -806,6 +807,7 @@ Existen una gran cantidad de configuraciones. A continuación se muestra la conf
 [user]
     email = <correo_electronico>
     name = <nombre>
+    signingkey = <path/clave_privada_filename> # Generalmente se suele crear en la propia carpeta .ssh: ~/.ssh/<clave_privada_filename>
 [init]
     defaultbranch = main
 [filter "lfs"]
@@ -819,6 +821,10 @@ Existen una gran cantidad de configuraciones. A continuación se muestra la conf
     editor = code --wait
 [help]
     autocorrect = 50
+[gpg]
+    format = ssh
+[commit]
+    gpgsign = true
 [alias]
     commitAll = "!f() { git add . && git commit -m \"$1\"; }; f"
     logDetails = log --oneline --graph --decorate --all
@@ -862,3 +868,22 @@ Pasos a realizar en ***Windows***:
 > Para **añadir otra cuenta**, se deben repetir los pasos anteriores, cambiando el `<nombre>` en `Host` del archivo `%USERPROFILE%\.ssh\config` por otro y **enlazándolo** con la clave privada correspondiente.
 >
 > Mediante `<nombre>.github` al realizar el *clone*, se puede **elegir** con que **cuenta** se desea clonar el repositorio, muy útil en repositorios privados
+
+
+# 6. Firmar commits
+En la mayoría de repositorios remotos permiten **firmar** los ***commits*** (mediante ***GPG*** o ***SSH***) para garantizar su autenticidad. Para ello, se debe seguir los siguientes pasos:
+
+- Mediante ***SSH***:
+    1. **Generar clave SSH**: Explicado anteriormente
+    1. **Copiar clave pública** en el **repositorio** remoto (*GitHub*, *GitLab*...)
+        - En ***GitHub***: `Settings` → `SSH and GPG keys` → `New SSH key` → `Key type: Signing Key` → `Copiar el contenido de la clave pública`
+    1. **Configurar *Git***: Aplicar los siguientes comandos
+
+        ```bash
+        git config user.signingkey <path/clave_privada_filename>
+        git config gpg.format ssh
+        git config commit.gpgsign true # Opcional. Evita tener que utilizar la flag `-S` en cada commit
+        ```
+
+> [!TIP]
+> Añadir la *flag* `--global` a los comandos anteriores para firmar **todos** los ***commits*** de todos los repositorios de manera automática
