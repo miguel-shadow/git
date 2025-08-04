@@ -32,14 +32,18 @@
         - [2.6.8. Cherry pick](#268-cherry-pick)
         - [2.6.9. Cambiar puntero de una rama a otra](#269-cambiar-puntero-de-una-rama-a-otra)
         - [2.6.10. Ver último commit de las ramas](#2610-ver-último-commit-de-las-ramas)
-    - [2.7. Repositorios remotos](#27-repositorios-remotos)
-        - [2.7.1. Ver enlace remoto](#271-ver-enlace-remoto)
-        - [2.7.2. Enlazar repositorio local con remoto](#272-enlazar-repositorio-local-con-remoto)
-        - [2.7.3. Clonar un repositorio remoto](#273-clonar-un-repositorio-remoto)
-        - [2.7.4. Actualizar cambios remotos](#274-actualizar-cambios-remotos)
-        - [2.7.5. Sincronizar cambios locales](#275-sincronizar-cambios-locales)
-        - [2.7.6. Publicar una rama](#276-publicar-una-rama)
-        - [2.7.7. Pull Request](#277-pull-request)
+    - [2.7. Worktree](#27-worktree)
+        - [2.7.1. Crear directorio](#271-crear-directorio)
+        - [2.7.2. Ver worktrees](#272-ver-worktrees)
+        - [2.7.3. Eliminar directorio](#273-eliminar-directorio)
+    - [2.8. Repositorios remotos](#28-repositorios-remotos)
+        - [2.8.1. Ver enlace remoto](#281-ver-enlace-remoto)
+        - [2.8.2. Enlazar repositorio local con remoto](#282-enlazar-repositorio-local-con-remoto)
+        - [2.8.3. Clonar un repositorio remoto](#283-clonar-un-repositorio-remoto)
+        - [2.8.4. Actualizar cambios remotos](#284-actualizar-cambios-remotos)
+        - [2.8.5. Sincronizar cambios locales](#285-sincronizar-cambios-locales)
+        - [2.8.6. Publicar una rama](#286-publicar-una-rama)
+        - [2.8.7. Pull Request](#287-pull-request)
 - [3. Git ignore](#3-git-ignore)
     - [3.1. Exlude](#31-exlude)
     - [3.2. Eliminar rastreo](#32-eliminar-rastreo)
@@ -536,7 +540,48 @@ git branch -v
 ```
 
 
-## 2.7. Repositorios remotos
+## 2.7. Worktree
+Permite crear **múltiples directorios** de trabajo (*working directories*) desde un solo repositorio Git. Cada directorio está vinculado a una rama distinta, y todos comparten el mismo historial y configuración. Esto permite trabajar en **varias ramas** al mismo tiempo, sin necesidad de hacer `stash`, `commit` ni cambiar de rama constantemente
+
+> [!NOTE]
+> Cada *working directory* se comporta como una copia independiente del repositorio, pero no se duplica el historial ni los archivos versionados del repositorio
+
+
+### 2.7.1. Crear directorio
+Para crear un nuevo directorio de trabajo y añadirlo al *worktree*:
+
+```bash
+git worktree add <nombre_carpeta> <rama>
+```
+
+> [!TIP]
+> Si la rama no existe, se puede crear automáticamente con la *flag* `-b`
+>
+> ```bash
+> git worktree add -b <nueva_rama> <nombre_carpeta>
+> ```
+
+
+### 2.7.2. Ver worktrees
+Para ver todos los *working directories* asociados al repositorio:
+
+```bash
+git worktree list
+```
+
+
+### 2.7.3. Eliminar directorio
+Para eliminar un *working directory* del *worktree*:
+
+```bash
+git worktree remove <nombre_carpeta>
+```
+
+> [!WARNING]
+> El *worktree* a eliminar no puede tener cambios sin cambios sin *commits*. Se puede forzar la eliminación con la *flag* `--force` o `-f`
+
+
+## 2.8. Repositorios remotos
 Hasta ahora solo se estaba trabajando en repositorios locales. Para poder trabajar con más personas en un mismo repositorio, es necesario utilizar repositorios remotos como ***[GitHub](https://github.com/)***, *[GitLab](https://gitlab.com/)*, *[Bitbucket](https://bitbucket.org/)*...
 
 Dependiendo de la plataforma, se siguen distintos pasos para crear un repositorio. En ***GitHub*** se puede crear de dos maneras:
@@ -551,7 +596,7 @@ En la mayoría de repositorios remotos permiten acceder al repositorio mediante 
 - Mediante ***GitHub CLI***
 
 
-### 2.7.1. Ver enlace remoto
+### 2.8.1. Ver enlace remoto
 Para ver a qué enlace remoto está apuntando un repositorio:
 
 ```bash
@@ -559,7 +604,7 @@ git remote -v
 ```
 
 
-### 2.7.2. Enlazar repositorio local con remoto
+### 2.8.2. Enlazar repositorio local con remoto
 Para enlazar un repositorio local con un repositorio remoto vacío, se utiliza el comando:
 
 ```bash
@@ -577,7 +622,7 @@ git remote add origin <enlace_repositorio>
 > Un repositorio local se puede enlazar con varios repositorios remotos, `origin` es el nombre por defecto. Para referenciar a otro repositorio remoto, se puede utilizar otro nombre
 
 
-### 2.7.3. Clonar un repositorio remoto
+### 2.8.3. Clonar un repositorio remoto
 Si el repositorio remoto posee contenido, se puede clonar el repositorio para obtenerlo. Para ello, se utiliza el comando:
 
 ```bash
@@ -585,7 +630,7 @@ git clone <enlace_repositorio>
 ```
 
 
-### 2.7.4. Actualizar cambios remotos
+### 2.8.4. Actualizar cambios remotos
 Si se ha producido algún cambio en el repositorio remoto, existen varias formas de adquirir esos cambios en el repositorio local:
 
 - ***Fetch*** + ***Merge***: Obtener los cambios e insertarlos manualmente:
@@ -602,7 +647,7 @@ Si se ha producido algún cambio en el repositorio remoto, existen varias formas
     ```
 
 
-### 2.7.5. Sincronizar cambios locales
+### 2.8.5. Sincronizar cambios locales
 En cambio, para sincronizar los cambios locales en el repositorio remoto, se debe realizar el comando:
 
 ```bash
@@ -620,7 +665,7 @@ git push
 > ```
 
 
-### 2.7.6. Publicar una rama
+### 2.8.6. Publicar una rama
 Se puede publicar una rama creada localmente en el repositorio remoto, para ello se utiliza el comando:
 
 ```bash
@@ -628,7 +673,7 @@ git push origin <nombre_rama>
 ```
 
 
-### 2.7.7. Pull Request
+### 2.8.7. Pull Request
 Las ***Pull Request*** (*PR*) son una herramienta para mejorar el trabajo colaborativo en *Git* ya que permiten **revisar** y **aprobar** los cambios de código antes de que se fusionen en una rama. De esta manera se evitan errores en el código, falta de documentación, conflictos o cualquier otro problema que podría surgir al integrar nuevas modificaciones
 
 En lugar de hacer un merge directamente en el repositorio local y luego hacer un push a la rama remota, se sigue el siguiente proceso:
