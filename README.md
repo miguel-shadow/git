@@ -34,8 +34,10 @@
         - [2.6.10. Ver último commit de las ramas](#2610-ver-último-commit-de-las-ramas)
     - [2.7. Worktree](#27-worktree)
         - [2.7.1. Crear directorio](#271-crear-directorio)
-        - [2.7.2. Ver worktrees](#272-ver-worktrees)
+        - [2.7.2. Ver directorios](#272-ver-directorios)
         - [2.7.3. Eliminar directorio](#273-eliminar-directorio)
+        - [2.7.4. Mover directorio](#274-mover-directorio)
+        - [2.7.5. Bloquear y desbloquear directorios](#275-bloquear-y-desbloquear-directorios)
     - [2.8. Repositorios remotos](#28-repositorios-remotos)
         - [2.8.1. Ver enlace remoto](#281-ver-enlace-remoto)
         - [2.8.2. Enlazar repositorio local con remoto](#282-enlazar-repositorio-local-con-remoto)
@@ -551,18 +553,24 @@ Permite crear **múltiples directorios** de trabajo (*working directories*) desd
 Para crear un nuevo directorio de trabajo y añadirlo al *worktree*:
 
 ```bash
-git worktree add <nombre_carpeta> <rama>
+git worktree add <path_carpeta> <rama>
 ```
 
 > [!TIP]
 > Si la rama no existe, se puede crear automáticamente con la *flag* `-b`
 >
 > ```bash
-> git worktree add -b <nueva_rama> <nombre_carpeta>
+> git worktree add -b <nueva_rama> <path_carpeta>
+> ```
+>
+> También se puede indicar la rama origen de la nueva rama del *working directory*
+>
+> ```bash
+> git worktree add -b <nueva_rama> <path_carpeta> <path_rama_origen>
 > ```
 
 
-### 2.7.2. Ver worktrees
+### 2.7.2. Ver directorios
 Para ver todos los *working directories* asociados al repositorio:
 
 ```bash
@@ -574,11 +582,46 @@ git worktree list
 Para eliminar un *working directory* del *worktree*:
 
 ```bash
-git worktree remove <nombre_carpeta>
+git worktree remove <path_carpeta>
 ```
 
 > [!WARNING]
 > El *worktree* a eliminar no puede tener cambios sin cambios sin *commits*. Se puede forzar la eliminación con la *flag* `--force` o `-f`
+
+También se pueden limpiar los registros de *worktree* que ya no existen en el sistema de archivos, por ejemplo mediante eliminación manual (sin usar el comando anterior). De esta manera se mantiene el *worktree* limpio y sincronizado. Para ello, se debe ejecutar el comando:
+
+```bash
+git worktree prune
+```
+
+
+### 2.7.4. Mover directorio
+Se puede mover un *working directory* de una ubicación a ella. Para ello, si se realiza de forma manual, el *worktree* se desincroniza. Para evitarlo, se debe mover el directorio mediante el comando:
+
+```bash
+git worktree move <path_carpeta_antigua> <path_carpeta_nueva>
+```
+
+
+### 2.7.5. Bloquear y desbloquear directorios
+Si se desea proteger el *working directory* de eliminaciones accidentales o si éste puede dejar de pertenecer al sistema de archivos (está almacenado en un USB, carpeta en red compartida...) y se desea evitar su *prune*, se debe utilizar el comando:
+
+```bash
+git worktree lock <path_carpeta>
+```
+
+> [!TIP]
+> Se puede indicar la razón mediante la flag `--reason`
+>
+>```bash
+> git worktree lock <path_carpeta> --reason "<mensaje>"
+>```
+
+Para desbloquear el *working directory* y permitir su eliminación, se debe ejecutar el comando:
+
+```bash
+git worktree unlock <path_carpeta>
+```
 
 
 ## 2.8. Repositorios remotos
