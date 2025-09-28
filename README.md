@@ -27,6 +27,7 @@
         - [2.6.3. Eliminar rama](#263-eliminar-rama)
         - [2.6.4. Renombrar rama](#264-renombrar-rama)
         - [2.6.5. Cambiar de rama](#265-cambiar-de-rama)
+            - [2.6.5.1. Cambiar a un commit específico](#2651-cambiar-a-un-commit-específico)
         - [2.6.6. Merge](#266-merge)
         - [2.6.7. Rebase](#267-rebase)
         - [2.6.8. Cherry pick](#268-cherry-pick)
@@ -461,8 +462,28 @@ Para cambiar de una rama a otra, se puede realizar mediante:
 > Para hacer un cambio rápido (*toggle*) entre la rama actual y la rama anterior:
 >
 > ```bash
+> git checkout -
+> ```
+>
+> ```bash
 > git switch -
 > ```
+
+
+#### 2.6.5.1. Cambiar a un commit específico
+Al igual que se puede cambiar de una rama a otra, también se puede cambiar a un *commit* en específico y ver el estado del repositorio hasta ese *commit*. Si se desea realizar cambios a partir del *commit*, se debe crear una rama nueva para ello. Para ver el estado del repositorio en un commit en específico, se puede utilizar los comandos:
+
+- ***Checkout***:
+
+    ```bash
+    git checkout <hash_commit>
+    ```
+
+- ***Switch***:
+
+    ```bash
+    git switch --detach <hash_commit>
+    ```
 
 
 ### 2.6.6. Merge
